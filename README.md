@@ -1,5 +1,3 @@
-# AOP_LOG_CONNECTOR
-
 #应用分析--日志采集
 ##传统的应用信息采集
 
@@ -33,7 +31,7 @@
 - Android应用经常使用多线程编程，用户交互的高度异步特点，导致很难彻底检测代码。你必须给应用中的子线程分配唯一识别符以保证数据的完整，而异步让采集器的回收变得困难；
 - 最后，一般应用的开发速度很快，代码变更很频繁，这让插入的标记也必须经常变动，而且手动插入性能检测点非常耗时且容易出错。工程师的时间不应该花费在可以自动化的事情上。而且，在一个不断变化的代码库中，确保这类检测点的正确性需要做大量的工作。
 
-![image](http://)
+![image](https://github.com/Abelzzg/AOP_LOG_CONNECTOR/screen/640.jpeg)
 
 ##在android采用AOP切面技术采集数据
 参考了github上AOP在Android实现切面的项目[AOPforAndroid](http://fernandocejas.com/2014/08/03/aspect-oriented-programming-in-android/)。
