@@ -1,0 +1,2 @@
+include ':demoanalytics'
+include ':logserviceSDK'
