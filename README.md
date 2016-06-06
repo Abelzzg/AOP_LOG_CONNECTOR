@@ -35,9 +35,13 @@
 
 ##在android采用AOP切面技术采集数据
 参考了github上AOP在Android实现切面的项目[AOPforAndroid](http://fernandocejas.com/2014/08/03/aspect-oriented-programming-in-android/)。在这里做一下简单说明：在程序运行的各个需要记录的节点进行切点的切入，记录日志的动作会在切点中进行。
+
 ![image](https://github.com/Abelzzg/AOP_LOG_CONNECTOR/raw/master/screen/aop.png)
+
 这些切点其实是在在编译的时候通过特殊的编译程序aspectj编织进去的.程序编译完成之后，切点里就会有执行日志采集的代码。
+
 ![image](https://github.com/Abelzzg/AOP_LOG_CONNECTOR/raw/master/screen/compilation_process.png)
+
 这个项目旨在解决以上代码侵入和维护困难等问题，使用了aspect的一个gradle插件，和aspect用于向android框架织入切点的jar包，gradle配置如下：
 
 	import com.android.build.gradle.LibraryPlugin
