@@ -1,7 +1,7 @@
 #应用分析--日志采集
 ##传统的应用信息采集
-
-	数据采集一般都离不开埋点插桩，但是大多数采集功能都需要手动地插入代码，标识某段操作的起点和终点。例如信息流的下拉刷新，工程师可以在第一个触摸事件时插入开始标记，然后在屏幕更新后插入结束标记。这种方法和Android Systrace工具所提供的功能类似。
+	
+数据采集一般都离不开埋点插桩，但是大多数采集功能都需要手动地插入代码，标识某段操作的起点和终点。例如信息流的下拉刷新，工程师可以在第一个触摸事件时插入开始标记，然后在屏幕更新后插入结束标记。这种方法和Android Systrace工具所提供的功能类似。
 	
 	友盟的收集方式，都是通过调用代码来实现：
 
@@ -34,8 +34,10 @@
 ![image](https://github.com/Abelzzg/AOP_LOG_CONNECTOR/raw/master/screen/640.jpeg)
 
 ##在android采用AOP切面技术采集数据
-参考了github上AOP在Android实现切面的项目[AOPforAndroid](http://fernandocejas.com/2014/08/03/aspect-oriented-programming-in-android/)。
-
+参考了github上AOP在Android实现切面的项目[AOPforAndroid](http://fernandocejas.com/2014/08/03/aspect-oriented-programming-in-android/)。在这里做一下简单说明：在程序运行的各个需要记录的节点进行切点的切入，记录日志的动作会在切点中进行。
+![image](https://github.com/Abelzzg/AOP_LOG_CONNECTOR/raw/master/screen/aop.png)
+这些切点其实是在在编译的时候通过特殊的编译程序aspectj编织进去的.程序编译完成之后，切点里就会有执行日志采集的代码。
+![image](https://github.com/Abelzzg/AOP_LOG_CONNECTOR/raw/master/screen/compilation_process.png)
 这个项目旨在解决以上代码侵入和维护困难等问题，使用了aspect的一个gradle插件，和aspect用于向android框架织入切点的jar包，gradle配置如下：
 
 	import com.android.build.gradle.LibraryPlugin
@@ -131,6 +133,11 @@
 	    String eventId();
 	    String eventName();
 	}
+	
+定制切面的使用
+ @CustomerTrace(eventName = "定制事件",eventId = "dingzhishijian")
+    public void emptymethod(){
+    }
 
 然后切点指向注解标注的方法：
 
@@ -145,9 +152,25 @@
 	private static final String POINTCUT_METHOD = "execution(* android.app.Activity.onCreate(..))";
             
 	private static final String POINTCUT_METHOD1 = "execution(* android.app.Fragment.onCreateView(..))";
-
+	
+耗时操作的注解必须是@Around,执行代码中需要调用processd方法，不然程序会卡住不执行。
+	@Around("methodAnnotatedWithTimeTrace() || methodAnnotatedWithTimeTrace1()")
+	public Object weaveJoinPoint(ProceedingJoinPoint joinPoint) throws Throwable {
+	  MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+	    String className = methodSignature.getDeclaringType().getName();
+	    String methodName = methodSignature.getName();
+	    LogReceiverUtils.generateBehaviorEventlog(buildLogMessage(className,methodName));
+	    final StopWatch stopWatch = new StopWatch();
+	    stopWatch.start();
+	    Object result = joinPoint.proceed();
+	    stopWatch.stop();
+	    LogReceiverUtils.generateDuringEventlog(className, methodName, String.valueOf(stopWatch.getTotalTimeMillis()));
+	    return result;
+	 }
 
 #####日志发送记录模板
+
+日志的记录和发送策略在这里不做详细说明，大家可以参考友盟和bugtags，策略宗旨就是不影响用户APP的使用，不占用过多流量，最好将日志压缩存储，当处于高速网络时发送。
 
 
 
